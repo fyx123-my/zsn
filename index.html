@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>点击进入星空</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(180deg, #050118, #10103a, #1a0b2e, #000);
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        #meteor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            font-size: 22px;
+            color: #fff;
+            text-shadow: 0 0 20px #fff, 0 0 40px #72a1ff;
+            animation: flash 2s infinite;
+            white-space: nowrap;
+        }
+        @keyframes flash {
+            0%,100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+
+<body onclick="goToSecondPage()">
+    <canvas id="meteor"></canvas>
+    <div class="text">点击任意位置 · 进入星空</div>
+
+    <audio id="bgMusic" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    
+
+    <script>
+        const music = document.getElementById('bgMusic');
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            music.volume = 0.5;
+        });
+
+        function goToSecondPage() {
+            // 点击播放音乐 + 跳转
+            music.play().then(() => {
+                window.location.href = "star2.html";
+            });
+        }
+
+        const canvas = document.getElementById('meteor');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        let stars = [];
+        let meteors = [];
+
+        for (let i = 0; i < 2500; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 1.6,
+                a: Math.random()
+            });
+        }
+
+        const colors = [
+            "#ffffff", "#a1c4fd", "#72a1ff", "#b993f5",
+            "#f5a3f5", "#ffb8d6", "#ffd993", "#93ffdb"
+        ];
+
+        function createMeteor() {
+            meteors.push({
+                x: Math.random() * canvas.width * 0.8,
+                y: 0,
+                len: Math.random() * 150 + 80,
+                speed: Math.random() * 10 + 6,
+                opacity: 1,
+                width: Math.random() * 2.5 + 1.5,
+                color: colors[Math.floor(Math.random() * colors.length)]
+            });
+        }
+
+        setInterval(createMeteor, 600);
+
+        function draw() {
+            ctx.fillStyle = 'rgba(8,1,24,0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(s => {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+                ctx.fill();
+            });
+
+            for (let i = meteors.length - 1; i >= 0; i--) {
+                const m = meteors[i];
+                ctx.beginPath();
+                ctx.moveTo(m.x, m.y);
+                ctx.lineTo(m.x + m.len, m.y + m.len);
+                ctx.strokeStyle = m.color + Math.floor(m.opacity * 255).toString(16).padStart(2, '0');
+                ctx.lineWidth = m.width;
+                ctx.stroke();
+
+                m.x += m.speed;
+                m.y += m.speed;
+                m.opacity -= 0.02;
+
+                if (m.opacity <= 0) {
+                    meteors.splice(i, 1);
+                }
+            }
+        }
+
+        setInterval(draw, 30);
+    </script>
+</body>
+</html>

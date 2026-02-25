@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>星空 · Starry Sky</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        #starsCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .moon {
+            position: absolute;
+            right: 80px;
+            bottom: 80px;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            box-shadow: 20px 20px 0 0 #fff;
+            opacity: 0.9;
+            animation: moonAnim 4s ease-in-out infinite;
+            z-index: 1;
+            cursor: pointer;
+        }
+        @keyframes moonAnim {
+            0%   { transform: translateY(0px) scale(1); opacity: 0.8; }
+            50%  { transform: translateY(-30px) scale(1.25); opacity: 1.1; }
+            100% { transform: translateY(0px) scale(1); opacity: 0.8; }
+        }
+        .content {
+            position: relative;
+            z-index: 2;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        h1 {
+            font-size: 52px;
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #fff, 0 0 30px #8ab8ff;
+        }
+        p {
+            font-size: 20px;
+            opacity: 0.9;
+            text-shadow: 0 0 10px #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="starsCanvas"></canvas>
+    <div class="moon" onclick="goNext()"></div>
+
+    <div class="content">
+        <h1>STARRY SKY</h1>
+        <p>仰望星空 · 心向远方</p >
+    </div>
+
+    <script>
+        const canvas = document.getElementById('starsCanvas');
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+
+        let stars = [];
+        for (let i = 0; i < 120; i++) {
+            stars.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                r: Math.random() * 1.5 + 0.5,
+                a: Math.random(),
+                speed: Math.random() * 0.01 + 0.002
+            });
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, w, h);
+            stars.forEach(s => {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+                ctx.fill();
+                s.a += s.speed;
+                if (s.a > 1 || s.a < 0.2) s.speed *= -1;
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+
+        window.addEventListener('resize', () => {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        });
+
+        // 点击月亮跳转到第三页
+        function goNext() {
+            window.location.href = "video2.html";
+        }
+    </script>
+</body>
+</html>
